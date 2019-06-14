@@ -7,6 +7,7 @@ const AuthCtrl= require('../controllers/authController')
 const treasureCtrl = require('../controllers/treasureController')
 const auth = require('./middleware/authMiddleware')
 
+
 const { SERVER_PORT, SESSION_SECRET, CONNECTION_STRING} = process.env
 
 massive(CONNECTION_STRING).then(db => {
@@ -29,4 +30,6 @@ app.post('/auth/login', AuthCtrl.login)
 app.get('/auth/logout', AuthCtrl.logout)
 
 app.get('/api/treasure/dragon', treasureCtrl.dragonTreasure)
-app.get('/api/treasure/user', treasureCtrl.getUserTreasure);
+app.get('/api/treasure/user', auth.usersOnly, treasureCtrl.getUserTreasure);
+app.post('/api/treasure/user', auth.usersOnly, treasureCtrl.addUserTreasure);
+app.get('/api/treasure/all', auth.usersOnly, auth.adminsOnly, treasureCtrl.getAllTreasure);
